@@ -32,7 +32,7 @@ One file per code set, no file extension, any origin allowed (`Access-Control-Al
 | --- | --- |
 | `/{CodeSetName}` | the **code set**: its codes with ISO's text, for example `/ExternalPurpose1Code` |
 | `/coverage` | every code set that exists here, with its number of codes. **A code set not listed here does not exist**; a client asks this once |
-| `/manifest` | the release, where the data came from (address, file, date, SHA-256), and totals |
+| `/manifest` | the release, where the data came from (address, file, date, SHA-256), totals, and a `notice` saying the lists are ISO's and this is not the official site |
 
 A path that is not published answers `404`. Names are ISO's own (`ExternalPurpose1Code`); they start with an upper-case letter, so they cannot clash
 with `coverage` or `manifest`.
@@ -90,6 +90,10 @@ host, and point its application at it. The addresses above are the whole contrac
 
 ## License and ISO's material
 
-The code and documentation here are MIT (see [LICENSE](LICENSE)). **The code lists and their text are ISO's**, published by ISO for free use under ISO's own terms
-([the external code sets page](https://www.iso20022.org/catalogue-messages/additional-content-messages/external-code-sets)); the license above does not cover them. We publish them
-unchanged, only split by code set. No warranty: check ISO's own files for anything that matters.
+The code and documentation here are MIT (see [LICENSE](LICENSE)). **The code lists and their text are ISO's**, from ISO's
+[external code sets page](https://www.iso20022.org/catalogue-messages/additional-content-messages/external-code-sets). We publish them unchanged, only split by code set.
+The host also says this in the `notice` field of `/manifest`.
+
+**ISO 20022 material.** The ISO 20022 specification, its schemas, code sets and their text are ISO's. ISO and its Registration Authority publish them to be used and reproduced freely under the [ISO 20022 Terms of use](https://www.iso20022.org/terms-use) and the [Intellectual Property Rights Policy](https://www.iso20022.org/intellectual-property-rights). **This is not the official ISO 20022 site. The sole source of up-to-date material is <https://www.iso20022.org/>.** ISO's material is provided "as is", without warranty. The license of this repository covers what we wrote, not ISO's material. This is not legal advice.
+
+No warranty: check ISO's own files for anything that matters.
