@@ -17,7 +17,9 @@ const jsonFile = join(sourceDir, 'ExternalCodeSets.json');
 const infoFile = join(sourceDir, 'source.json');
 const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : undefined; };
 const say = (changed) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `changed=${changed}\n`); };
-const fail = (msg) => { console.error(`fetch: ${msg}`); process.exit(1); };
+// the one line at the top of the run's page on GitHub (the step summary), so nobody has to open the steps
+const summary = (line) => { if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${line}\n`); };
+const fail = (msg) => { summary(`**Failed:** ${msg}`); console.error(`fetch: ${msg}`); process.exit(1); };
 
 const work = join(root, '_download');
 mkdirSync(work, { recursive: true });
@@ -46,11 +48,12 @@ if (sets.length < 100) fail(`only ${sets.length} code sets in the file; refusing
 
 const old = existsSync(infoFile) ? JSON.parse(readFileSync(infoFile, 'utf8')) : null;
 if (old && old.codeSets && sets.length < old.codeSets * 0.9) fail(`the file has ${sets.length} code sets, ${old.codeSets} before; refusing it`);
-if (old && old.sha256 === sha256) { console.log(`unchanged (${old.release}, ${sets.length} code sets)`); say(false); process.exit(0); }
+if (old && old.sha256 === sha256) { console.log(`unchanged (${old.release}, ${sets.length} code sets)`); summary(`**Unchanged:** ISO's file is still ${old.release}, ${sets.length} code sets.`); say(false); process.exit(0); }
 
 mkdirSync(sourceDir, { recursive: true });
 writeFileSync(jsonFile, bytes);
 const info = { url: URL_ZIP, file: entry, release: releaseOf(entry), sha256, codeSets: sets.length, values: sets.reduce((n, s) => n + s.values.length, 0), lastModified, retrievedAt: new Date().toISOString() };
 writeFileSync(infoFile, JSON.stringify(info, null, 2) + '\n');
 console.log(`changed: ${old ? `${old.release} -> ` : ''}${info.release}, ${info.codeSets} code sets, ${info.values} codes`);
+summary(`**Changed:** ${old ? `${old.release} → ` : ''}${info.release}, ${info.codeSets} code sets, ${info.values} codes. A pull request follows.`);
 say(true);
