@@ -25,6 +25,8 @@ test('/manifest says where the data came from', () => {
   assert.match(m.release, /^\dQ\d{4} v\d+$/);
   assert.match(m.source.sha256, /^[0-9a-f]{64}$/);
   assert.equal(m.convention, 'v0');
+  assert.match(m.notice, /not the official ISO 20022 site/);
+  assert.match(m.notice, /https:\/\/www\.iso20022\.org\//);
 });
 
 test('/_headers lets any origin read JSON', () => {

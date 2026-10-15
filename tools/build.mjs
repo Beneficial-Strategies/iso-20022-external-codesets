@@ -27,6 +27,8 @@ writeFileSync(join(out, 'manifest'), json({
   codeSets: info.codeSets,
   values: info.values,
   convention: 'v0',
+  // ISO asks that a replication say it is not the official site (https://www.iso20022.org/terms-use); the master wording is in Iso20022MasterControl/docs/upstream-terms/
+  notice: "ISO's external code sets, from ISO and its Registration Authority, published to be used and reproduced freely under the ISO 20022 Terms of use (https://www.iso20022.org/terms-use) and Intellectual Property Rights Policy (https://www.iso20022.org/intellectual-property-rights). This is not the official ISO 20022 site; the sole source of up-to-date material is https://www.iso20022.org/. Provided \"as is\", without warranty.",
 }));
 // every path answers JSON, for any origin; the lists change about quarterly, so a short cache with a long stale window is plenty
 writeFileSync(join(out, '_headers'), `/*\n  Content-Type: application/json; charset=utf-8\n  Access-Control-Allow-Origin: *\n  Cache-Control: public, max-age=300, stale-while-revalidate=86400\n`);
