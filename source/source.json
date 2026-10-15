@@ -1,0 +1,10 @@
+{
+  "url": "https://www.iso20022.org/sites/default/files/media/file/ExternalCodeSets_JSON.zip",
+  "file": "2Q2026_externalcodesets_v3.json",
+  "release": "2Q2026 v3",
+  "sha256": "c0c045e7f73434a30dcc064c41f5b34249f0e3e90f94d9a6931235b4aa915560",
+  "codeSets": 163,
+  "values": 3314,
+  "lastModified": "Thu, 03 Sep 2026 09:22:13 GMT",
+  "retrievedAt": "2026-10-15T08:42:22.426Z"
+}

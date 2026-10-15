@@ -1,0 +1,14 @@
+{
+  "name": "iso-20022-external-codesets",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ISO 20022 external code sets: tracked nightly from ISO, served as JSON files.",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "fetch": "node tools/fetch.mjs",
+    "build": "node tools/build.mjs --out site",
+    "test": "node --test \"test/*.test.mjs\"",
+    "serve": "node tools/serve.mjs"
+  }
+}

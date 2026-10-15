@@ -1,0 +1,25 @@
+name: Enhancement
+description: Something this host should serve, or a way its build should work
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What you cannot do today.
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What will exist when this is done. One deliverable per issue.
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: Checkable conditions, including how it is tested.
+    validations:
+      required: true

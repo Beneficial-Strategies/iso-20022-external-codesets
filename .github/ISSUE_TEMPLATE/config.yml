@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: A code, or its wording, is wrong in ISO's own list
+    url: https://www.iso20022.org/catalogue-messages/additional-content-messages/external-code-sets
+    about: This host publishes ISO's lists exactly as ISO releases them, so a mistake in them is ISO's to correct. Tell ISO (the external code sets page), then tell us if our copy should wait for it.
+  - name: A translation of a code name
+    url: https://github.com/Beneficial-Strategies/iso-20022-text#readme
+    about: Wording in other languages lives in the language repositories.

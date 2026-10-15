@@ -1,0 +1,24 @@
+name: Bug
+description: This host answers wrongly, or does not match ISO's published file
+labels: ["bug", "needs-triage"]
+body:
+  - type: input
+    id: address
+    attributes:
+      label: Address
+      description: The path that is wrong (for example /ExternalPurpose1Code).
+      placeholder: /ExternalPurpose1Code
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you see, and what ISO's file says
+      description: A code that is missing or extra, text that differs, a wrong header. Name the ISO release if you know it (see /manifest).
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: Related
+      description: Issues and pull requests, as #number.

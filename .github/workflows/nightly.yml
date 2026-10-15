@@ -1,0 +1,78 @@
+name: "Nightly download of ISO's external code sets"
+
+# Every night, download ISO's file. If its contents differ from source/, test and build the new copy, and open a pull request with what changed.
+# Merging that pull request is what updates https://iso-20022-external-codesets.beneficialstrategies.com (Cloudflare builds main).
+# Nothing is deployed from here, and nothing is committed to main.
+on:
+  schedule:
+    - cron: "41 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Download ISO's file
+        id: fetch
+        run: node tools/fetch.mjs
+
+      - name: Test and build the new copy
+        if: steps.fetch.outputs.changed == 'true'
+        run: |
+          npm test
+          npm run build
+
+      - name: Open a pull request
+        if: steps.fetch.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release=$(node -p "require('./source/source.json').release")
+          sha=$(node -p "require('./source/source.json').sha256.slice(0,8)")
+          branch="codesets/$(echo "$release" | tr 'A-Z ' 'a-z-')-$sha"
+          if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')" ]; then
+            echo "A pull request for $branch is already open."; exit 0
+          fi
+          git show HEAD:source/ExternalCodeSets.json > "$RUNNER_TEMP/old.json"
+          node tools/diff.mjs "$RUNNER_TEMP/old.json" source/ExternalCodeSets.json > "$RUNNER_TEMP/changes.md"
+          {
+            echo "ISO's external code sets changed: **$release**."
+            echo
+            echo "Merging this updates the host. Look at what changed first; tests and the build already pass."
+            echo
+            echo "## What changed"
+            echo
+            cat "$RUNNER_TEMP/changes.md"
+            echo
+            echo "Source: $(node -p "require('./source/source.json').url")"
+            echo
+            echo "Codes that are new here have no translation in the language repositories until someone adds one; they show ISO's English."
+          } > "$RUNNER_TEMP/body.md"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add source
+          git commit -m "ISO external code sets $release"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" --label codesets --label no-issue \
+            --title "ISO external code sets: $release" --body-file "$RUNNER_TEMP/body.md"
+
+      - name: Report a failure as an issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh issue list --label nightly-failed --state open --json number --jq '.[0].number')
+          body="The nightly run failed: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          if [ -n "$existing" ]; then gh issue comment "$existing" --body "$body"
+          else gh issue create --label nightly-failed --title "The nightly download of ISO's external code sets failed" --body "$body"; fi
