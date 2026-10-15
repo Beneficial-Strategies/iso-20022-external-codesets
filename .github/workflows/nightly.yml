@@ -64,8 +64,17 @@ jobs:
           git add source
           git commit -m "ISO external code sets $release"
           git push -u origin "$branch"
-          gh pr create --base main --head "$branch" --label codesets --label no-issue \
-            --title "ISO external code sets: $release" --body-file "$RUNNER_TEMP/body.md"
+          if ! gh pr create --base main --head "$branch" --label codesets --label no-issue \
+            --title "ISO external code sets: $release" --body-file "$RUNNER_TEMP/body.md"; then
+            # an organization can forbid Actions to open pull requests (Settings > Actions > General); then the branch is pushed and an issue
+            # carries the link that opens the pull request in one click
+            {
+              echo "The branch \`$branch\` holds ISO's new file. **[Open the pull request](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/compare/main...${branch}?expand=1&labels=codesets,no-issue)**, check what changed, and merge it to update the host."
+              echo
+              cat "$RUNNER_TEMP/body.md"
+            } > "$RUNNER_TEMP/issue.md"
+            gh issue create --label codesets --title "ISO external code sets: $release (open the pull request)" --body-file "$RUNNER_TEMP/issue.md"
+          fi
 
       - name: Report a failure as an issue
         if: failure()
