@@ -65,6 +65,25 @@ A client treats the host as the primary source when it has been told about it, a
 the host is not configured or does not answer. Ask `/coverage` once to learn which code sets exist, then fetch `/{CodeSetName}` for the ones a form shows.
 Translations are applied by the client from the text hosts, keyed by the code, as for any other code.
 
+## Writing a client
+
+What the files mean, so that a dropdown and a validator read them the same way. What a client *does* about it is its own policy.
+
+| The host says | It means | A client |
+| --- | --- | --- |
+| `/coverage` does not list the code set, or `/{CodeSetName}` answers `404` | the host does not have this code set | has nothing to show or check against; falls back to what it carries itself, or treats the field as unchecked |
+| `"values": []` | ISO publishes no list: the field is free text | accepts any value of the right `length` / `pattern`; offers no options |
+| a value is not in `values` | not in this release; **the lists are not closed** (ISO adds codes between releases, banks use their own) | a dropdown still lets a person enter it; a validator decides (refuse, or accept with a warning) and says which |
+| the host cannot be reached, or answers `5xx` | nothing is known now | keeps the last list it read; with none, falls back to its own copy, or accepts, or refuses (its choice, stated) |
+| `release` | the release the list belongs to | may show it, and may use it to know when a list changed |
+
+Read a list once and keep it (the lists change about quarterly, and a cache of an hour or more is fine); never make a person wait for a refresh.
+The files are small, static and served with `Access-Control-Allow-Origin: *`, so a browser can read them directly.
+
+Known clients: the Headless form library and the Message Explorer (dropdowns), and the .NET package
+[`BeneficialStrategies.Iso20022.Messages.Validation`](https://github.com/Beneficial-Strategies/iso-20022-messages-validation) (checks a value against the list;
+it refuses a value that is not listed, and uses its built-in values while the host is down).
+
 ## Run it, or host your own
 
 ```sh
